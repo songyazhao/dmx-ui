@@ -1,0 +1,47 @@
+<template>
+  <view class="dmx-button-group" wx:class="{{ classNames }}">
+    <slot></slot>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  properties: {
+    // 是否纵向排列按钮
+    vertical: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  computed: {
+    classNames () {
+      return {
+        'dmx-button-group__vertical': this.vertical
+      }
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+.dmx-button-group
+  display flex
+  &__vertical
+    flex-direction column
+  [is^="components/dmx-button"]
+    margin-left 20rpx
+    &:nth-last-of-type(1)
+      margin-right 20rpx
+    &:only-child
+      margin-right 68rpx
+      margin-left 68rpx
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

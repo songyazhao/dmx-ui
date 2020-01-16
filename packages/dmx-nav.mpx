@@ -1,0 +1,88 @@
+<template>
+  <view class="dmx-nav">
+    <view
+      class="dmx-nav-item"
+      wx:class="{{ { active: selectedIndex === index } }}"
+      wx:for="{{navs}}"
+      wx:key="index"
+      bindtap="bindTap(index)"
+    >{{ item.label }}
+    </view>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  properties: {
+    options: {
+      type: Array,
+      value: []
+    }
+  },
+
+  data: {
+    selectedIndex: 0
+  },
+
+  computed: {
+    navs () {
+      if (this.options.length > 0) {
+        if (this.options[0].value !== undefined) return this.options
+        return this.options.map((label, value) => ({ label, value }))
+      }
+      return []
+    }
+  },
+
+  methods: {
+    bindTap (index) {
+      if (this.selectedIndex === index) return
+
+      const value = this.options[index]
+      this.selectedIndex = index
+      this.triggerEvent('change', value)
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+.dmx-nav
+  font-size 0
+  text-align left
+  height 40px
+  padding 0 16px
+  box-sizing border-box
+  background-color white
+  overflow-x auto
+  &-item
+    display inline-block
+    text-align center
+    margin-right 40rpx
+    padding-top 15px
+    padding-bottom 7px
+    color #404040
+    font-size 16px
+    line-height 18px
+    &.active
+      font-size 18px
+      font-weight 700
+      &::after
+        content ''
+        display block
+        margin-top -4px
+        margin-left -1px
+        bottom 7px
+        height 4px
+        width calc(100% + 2px)
+        background #FC0
+        border-radius 100px
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

@@ -1,0 +1,35 @@
+<template>
+  <view wx:style="{{
+    {
+      width: '100vw',
+      paddingTop: wxStatusBarHeight + 'px',
+      height: wxNavBarHeight + 'px'
+    }
+  }}">
+    <slot></slot>
+  </view>
+</template>
+<script>
+import { createComponent } from '@mpxjs/core'
+import util from '~/utils/util'
+
+// 该组件是用来适配自定义头部导航栏在刘海屏的高度
+createComponent({
+  externalClasses: [
+    'dmx-nav-bar-adapter'
+  ],
+
+  data: {
+    // 获取标题栏高度
+    wxNavBarHeight: util.wxNavBarHeight(),
+    // 状态栏高度
+    wxStatusBarHeight: util.wxStatusBarHeight()
+  }
+})
+</script>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

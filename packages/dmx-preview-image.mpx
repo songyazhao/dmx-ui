@@ -1,0 +1,131 @@
+<template>
+  <view class="dmx-product-environment">
+    <block wx:if="{{pictures.length > 1}}">
+      <scroll-view class="dmx-product-environment__scroll" scroll-x>
+        <view class="dmx-product-environment__imgs">
+          <image
+            wx:for="{{pictures}}"
+            wx:key="index"
+            src="{{item}}"
+            data-index="{{index}}"
+            mode="aspectFill"
+            show-menu-by-longpress
+            bindtap="bindGrowPic" />
+        </view>
+        <view
+          wx:if="{{pictures.length > 2 && showCount}}"
+          class="dmx-product-environment__count">
+          {{pictures.length}}
+        </view>
+      </scroll-view>
+    </block>
+    <block wx:elif="{{pictures.length === 1}}">
+      <image
+        class="dmx-product-environment__one-imgs"
+        src="{{pictures[0]}}"
+        data-index="{{0}}"
+        mode="aspectFill"
+        show-menu-by-longpress
+        bindtap="bindGrowPic" />
+    </block>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  props: {
+    pictures: {
+      type: Array,
+      value: []
+    },
+    // 是否显示数量, pictures.length > 1 时有效
+    showCount: {
+      type: Boolean,
+      value: true
+    }
+  },
+
+  data: {
+    isDelay: false // 用来控制延迟点击, 部分安卓手机点击图片放大的瞬间在点击消失会重复弹一次图片放大
+  },
+
+  methods: {
+    /**
+     * 点击查看大图
+     * @param {Object} e.currentTarget.dataset
+     * └─ @property {Number} index - 当前点击的图片在图片列表中的索引
+     */
+    bindGrowPic ({
+      currentTarget: {
+        dataset: { index }
+      }
+    }) {
+      if (this.isDelay) return // 处于延迟点击中, 直接return 不向下执行
+
+      const urls = this.pictures
+      const current = urls[index]
+      wx.previewImage({
+        urls,
+        current,
+        success: () => {
+          this.isDelay = true
+          setTimeout(() => this.isDelay = false, 500)
+        }
+      })
+      this.triggerEvent('on-show-big', { index, current })
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+$width = 268rpx
+$height = 200rpx
+
+.dmx-product-environment
+  &__scroll
+    position relative
+  &__count
+    height 48rpx
+    padding-left 56rpx
+    padding-right 16rpx
+    box-sizing border-box
+    position absolute
+    top 136rpx
+    left 188rpx
+    z-index 1
+    border-radius 12px
+    color white
+    text-align right
+    font-size 12px
+    line-height 52rpx
+    background-color rgba(0, 0, 0, 0.60)
+    background-image url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAkCAYAAADPRbkKAAAABGdBTUEAALGPC/xhBQAAA2RJREFUWAntmV2ITVEUx++d8RFNJFEjgzIUwrwNTzSNKXn1MY3JE16EzDwx1EiK8ODRx4OpG1Ly4gENSckoaV4mJpSEKCFXvoa5fuvO2bfVmn3uvWeie46s+s9ea+211vmvc/Y+59wzqVQguVwuDbaBPpAFcRPhJNyEY9rxzo84asFNkBQRrrVCXs66dNMLmsSRILkF1+b8skE5nSDimup2aaAPT6Py5tDPg6fKFwe1HhJtQK//+ykasBs2Ewe2Pg5wzQAt2SoCa0xw3M68pme51UgDiZb/DfyJy8eiHgf2getgr9jl1i07sNyCUeMgK3eVc2BzkNvCuBx/WzqdHg58oUMcltAx2DnyjugmlFPOKDZWtAHO8h7IdYYQ3Mr88ZC5grtiDUCuFRYnCkz8Sidx+/1TI96KNACpJg7fA/RTVRh9lT9GDhG/0/gK5pgaoOA8sLhQJYJCXgPhV8AEk/YIeyG4a/xiniRvi8efklcJK93ewMBJ8FGVcBV9SrF4PUesNP5a5Tv1FcociWWcCh66CTX+RL+o7LwaqQEyDtoC2P1glibq04mZDh4DKx9xLNU52DOAL3bIJpfdAIk7bLKyX6CHLinmJoN7Kt6p31BWa/JOxz8bPHeBYWNZDZDcCn6FFQn8HxhXOQJuxFcNZKlZkXobXJxvZH4BeGMTtV2yAYJbwA+dVESXM7pRk8E+GxIfemcx+cvIfx9SI1e0AZIawWdP8iC+XcDX2DD+DiHBKLdAnxzRJEvpFFgBfDzCGyBhEXgHrLzEMTcguAb9kw0I7N4Qfw9+e/8v1YOcjGZQ3iYmsA7IxrQil3KJPhp2A/DdGm2u2NfAeJ0fRSf3ghTR4nuQTaLoDVBnin/BXscb4oD2Y/djrwTyIComD5hcT/xQsaASc4Oj5nU3gS5LxIpcurWjkpWD+Wngjk0M7CeMM1X4mFRqdNv6vk1sY2RT2tddLwHiJoJLpsBb7PnehIhO6oypgd1RjsNBqkAXeAZug9AHXJS6EkutyA0cjnqQvxnva8C3iR2HM2y4LmfEdqQr+2ELV+4yqI4baThlhJySrPyol9tioyIrnxa/gwMEKnfF1XoYyKdFLQP/xMddeaz3AvmZlyTJf16vYqPKOmkH4kiKCNf2gPsIZ9Z7fjkxJupfTL8B9UfigkEsYZoAAAAASUVORK5CYII=')
+    background-repeat no-repeat
+    background-size 32rpx 24rpx
+    background-position 16rpx center
+  &__imgs
+    height $height
+    white-space nowrap
+    image
+      width $width
+      height $height
+      margin-right 12rpx
+      &:first-child
+        margin-left 32rpx
+      &:last-child
+        margin-right 32rpx
+  &__one-imgs
+    display block
+    width calc(100vw - 64rpx)
+    height 320rpx
+    margin 0 auto
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

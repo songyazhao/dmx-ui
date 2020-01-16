@@ -1,0 +1,38 @@
+<template>
+  <dmx-cell
+    wx:for="{{listData}}"
+    wx:key="index"
+    label="{{item}}"
+    tap-highlight
+    bindtap="bindCellClick(item)">
+  </dmx-cell>
+</template>
+
+<script>
+import { createPage } from '@mpxjs/core'
+
+createPage({
+  data: {
+    listData: [
+      'Button',
+      'Cell',
+      'Mask',
+      'Tag'
+    ]
+  },
+
+  methods: {
+    bindCellClick (item) {
+
+    }
+  }
+})
+</script>
+
+<script type="application/json">
+{
+  "usingComponents": {
+    "dmx-cell": "@/dmx-cell"
+  }
+}
+</script>

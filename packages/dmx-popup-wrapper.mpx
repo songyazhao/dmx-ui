@@ -1,0 +1,143 @@
+<!--
+  Description  通用型弹出组件的包裹层, 内置了进入、离开的动画(可配置)
+  @authors     songyazhao (syazhao@foxmail.com)
+  @date        2019-11-29 19:56:47
+-->
+<template>
+  <!-- popup的蒙层 -->
+  <dmx-mask
+    wx:ref="dmMask"
+    enable-animation="{{enableAnimation}}"
+    z-index="1002"
+    auto-hide="{{false}}">
+  </dmx-mask>
+
+  <!-- popup的内容 -->
+  <view
+    wx:show="{{isShow || (!isShow && !isLeft)}}"
+    class="dmx-popup-wrapper"
+    wx:style="{{ { ...extendStyle, ...animateStyle } }}">
+    <slot></slot>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+const ENTRY = {
+  animationName: 'fadeIn',
+  animationDuration: '.35s',
+  animationTimingFunction: 'ease-in'
+}
+const LEAVE = {
+  animationName: 'fadeOut',
+  animationDuration: '.2s',
+  animationTimingFunction: 'ease-out'
+}
+
+createComponent({
+  properties: {
+    // 进入视图时的动画, 不需要动画时请传 `none`
+    // 可选属性: `animationName`、`animationDuration`、`animationTimingFunction`
+    // 动画name可以在 `animate.styl` 中找到
+    entry: {
+      type: [Object, String],
+      value: ENTRY
+    },
+    // 离开视图时的动画, 不需要动画时请传 `none`
+    // 可选属性: `animationName`、`animationDuration`、`animationTimingFunction`
+    // 动画name可以在 `animate.styl` 中找到
+    leave: {
+      type: [Object, String],
+      value: LEAVE
+    },
+    // 内容基于popup-wrapper元素的x轴位置
+    // 可选值 `left`、`right`、`center`
+    positionX: {
+      type: String,
+      value: 'left'
+    },
+    // 内容基于popup-wrapper元素的y轴位置
+    // 可选值 `top`、`bottom`、`center`
+    positionY: {
+      type: String,
+      value: 'center'
+    }
+  },
+
+  data: {
+    isShow: false,
+    isLeft: true // 是否已经过渡完离开的动画
+  },
+
+  computed: {
+    extendStyle () {
+      const alias = {
+        left: 'flex-start',
+        right: 'flex-end',
+        top: 'flex-start',
+        bottom: 'flex-end'
+      }
+      const calc = attr => alias[attr] || attr
+      return {
+        alignItems: calc(this.positionX),
+        justifyContent: calc(this.positionY)
+      }
+    },
+    animateStyle () {
+      const entry = { ...ENTRY, ...this.entry }
+      const leave = { ...LEAVE, ...this.leave }
+      const calc = ani => ani === 'none' ? {} : ani
+      return this.isShow ? calc(entry) : calc(leave)
+    },
+    enableAnimation () {
+      return this.entry.animationName !== 'none' && this.leave.animationName !== 'none'
+    }
+  },
+
+  watch: {
+    isShow (val) {
+      this.$refs.dmMask[val ? 'show' : 'hide']()
+    }
+  },
+
+  methods: {
+    show () {
+      this.isShow = true
+    },
+    hide () {
+      if (!this.isShow) return
+
+      this.isShow = false
+      this.isLeft = false
+      const delay = parseFloat(this.leave.animationDuration) * 1000
+      setTimeout(() => this.isLeft = true, delay) // 等待离开动画执行完毕在进行隐藏
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+@import './styles/animate.styl'
+
+.dmx-popup-wrapper
+  display flex
+  flex-direction column
+  width 100%
+  height 100%
+  position fixed
+  z-index 1003
+  left 0
+  right 0
+  top 0
+  right 0
+</style>
+
+<script type="application/json">
+  {
+    "component": true,
+    "usingComponents": {
+      "dmx-mask": "./dmx-mask"
+    }
+  }
+</script>

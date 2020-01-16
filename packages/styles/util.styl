@@ -1,0 +1,136 @@
+/**
+ * 绘制实心三角形
+ * @param $color 三角形颜色
+ * @param $rotateZ 三角形要旋转的角度
+ * @param $width 三角形宽度
+ */
+drawSolidTriangle($color = #404040, $rotateZ = 0deg, $width = 8rpx)
+  &::after
+    content ''
+    display inline-block
+    width 0
+    height 0
+    border-width $width
+    border-style solid
+    border-color $color transparent transparent transparent
+    transform rotateZ($rotateZ) translateY(-100%)
+
+/**
+ * 绘制箭头
+ * @param $color 箭头颜色
+ * @param $size 箭头大小
+ * @param $width 箭头旋转角度
+ */
+drawArraw($color = #999, $size = 16rpx, $rotateZ = 45deg)
+  &::after
+    content ''
+    display inline-block
+    width $size
+    height $size
+    border-top 1px solid $color
+    border-right 1px solid $color
+    transform rotateZ($rotateZ) skew(6deg, 6deg)
+
+/**
+ * 绘制1px边框
+ * @param $color 边框颜色
+ * @param $borderRadius 边框圆角大小
+ */
+drawBorder1px($color = #E5E5E5, $borderRadius = 4px)
+  position relative
+  &::after
+    content ''
+    position absolute
+    top 0
+    left 0
+    box-sizing border-box
+    width 200%
+    height 200%
+    background-color transparent
+    background-clip padding-box
+    content ''
+    border 1px solid $color
+    border-radius $borderRadius
+    transform-origin 0 0
+    transform scale3d(0.5, 0.5, 1)
+    pointer-events none
+
+/**
+ * 绘制左边1px边框
+ * @param $color 边框颜色
+ * @param $left 距离父级元素顶部偏移
+ * @param $right 距离父级元素底部偏移
+ * @param $bottom 距离父级元素左侧偏移
+ */
+drawLeftBorder1px($color = #E5E5E5, $top = 0, $bottom = 0, $left = 0)
+  position relative
+  &::before
+    content ''
+    position absolute
+    left $left
+    top $top
+    bottom $bottom
+    width 1px
+    background-color $color
+    transform-origin 0 100%
+    transform scale3d(0.5, 1, 1)
+
+/**
+ * 绘制右边1px边框
+ * @param $color 边框颜色
+ * @param $left 距离父级元素顶部偏移
+ * @param $right 距离父级元素底部偏移
+ * @param $bottom 距离父级元素右侧偏移
+ */
+drawRightBorder1px($color = #E5E5E5, $top = 0, $bottom = 0, $right = 0)
+  position relative
+  &::after
+    content ''
+    position absolute
+    right $right
+    top $top
+    bottom $bottom
+    width 1px
+    background-color $color
+    transform-origin 0 100%
+    transform scale3d(0.5, 1, 1)
+
+/**
+ * 绘制顶部1px边框
+ * @param $color 边框颜色
+ * @param $left 距离父级元素左侧偏移
+ * @param $right 距离父级元素左侧偏移
+ * @param $top 距离父级元素顶部偏移
+ */
+drawTopBorder1px($color = #E5E5E5, $left = 0, $right = 0, $top = 0)
+  position relative
+  &::before
+    content ''
+    position absolute
+    left $left
+    right $right
+    top $top
+    height 1px
+    background-color $color
+    transform-origin 0 100%
+    transform scale3d(1, 0.5, 1)
+
+/**
+ * 绘制底部1px边框
+ * @param $color 边框颜色
+ * @param $left 距离父级元素左侧偏移
+ * @param $right 距离父级元素左侧偏移
+ * @param $bottom 距离父级元素底部偏移
+ */
+drawBottomBorder1px($color = #E5E5E5, $left = 0, $right = 0, $bottom = 0)
+  position relative
+  &::after
+    content ''
+    position absolute
+    left $left
+    right $right
+    bottom $bottom
+    height 1px
+    background-color $color
+    transform-origin 0 100%
+    transform scale3d(1, 0.5, 1)

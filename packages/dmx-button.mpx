@@ -1,0 +1,281 @@
+<template>
+  <button
+    class="dmx-btn"
+    wx:class="{{classNames}}"
+    hover-class="dmx-btn-touch"
+    open-type="{{openType}}"
+    loading="{{loading}}"
+    hover-stop-propagation="{{hoverStopPropagation}}"
+    session-from="{{sessionFrom}}"
+    send-message-title="{{sendMessageTitle}}"
+    send-message-path="{{sendMessagePath}}"
+    send-message-img="{{sendMessageImg}}"
+    show-message-card="{{showMessageCard}}"
+    app-parameter="{{appParameter}}"
+    bindtap="bindTap"
+    bindgetuserinfo="bindgetuserinfo"
+    bindcontact="bindcontact"
+    bindgetphonenumber="bindgetphonenumber"
+    bindlaunchapp="bindlaunchapp"
+    binderror="binderror"
+    bindopensetting="bindopensetting">
+    <slot></slot>
+  </button>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+/**
+ * 自定义按钮组件
+ * 支持的 button 自有属性:
+ * form-type、open-type、hover-stop-propagation、session-from、send-message-title、
+ * send-message-path、send-message-img、show-message-card、app-parameter
+ * 支持的事件:
+ * bindgetuserinfo、bindcontact、bindgetphonenumber、bindlaunchapp、binderror、bindopensetting
+ * @see https://developers.weixin.qq.com/miniprogram/dev/component/button.html
+ */
+
+createComponent({
+  properties: {
+    // - 尺寸
+    size: {
+      type: String,
+      value: 'middle' // large | middle | small
+    },
+    // - 类型
+    type: {
+      type: String,
+      value: 'default' // primary | success | warning | danger | info
+    },
+    // - 是否朴素按钮
+    plain: {
+      type: Boolean,
+      value: false
+    },
+    // - 是否圆角按钮
+    round: {
+      type: Boolean,
+      value: false
+    },
+    // - 是否行内按钮
+    inline: {
+      type: Boolean,
+      value: false
+    },
+    // - 是否激活(同点击态的样式)
+    active: {
+      type: Boolean,
+      value: false
+    },
+    // - 是否禁用
+    disabled: {
+      type: Boolean,
+      value: false
+    },
+    // - 名称前是否带 loading 图标
+    loading: {
+      type: Boolean,
+      value: false
+    },
+    // - 微信开放能力
+    openType: {
+      type: String,
+      value: ''
+    },
+    // - 指定是否阻止本节点的祖先节点出现点击态
+    hoverStopPropagation: {
+      type: Boolean,
+      value: true
+    },
+    // - 会话来源，open-type="contact"时有效
+    sessionFrom: {
+      type: String,
+      value: ''
+    },
+    // - 会话内消息卡片标题，open-type="contact"时有效
+    sendMessageTitle: {
+      type: String,
+      value: ''
+    },
+    // - 会话内消息卡片点击跳转小程序路径，open-type="contact"时有效
+    sendMessagePath: {
+      type: String,
+      value: ''
+    },
+    // - 会话内消息卡片图片，open-type="contact"时有效
+    sendMessageImg: {
+      type: String,
+      value: ''
+    },
+    // - 是否显示会话内消息卡片，设置此参数为 true，用户进入客服会话会在右下角显示"可能要发送的小程序"提示，用户点击后可以快速发送小程序消息，open-type="contact"时有效
+    showMessageCard: {
+      type: Boolean,
+      value: false
+    },
+    // - 打开 APP 时，向 APP 传递的参数，open-type=launchApp时有效
+    appParameter: {
+      type: String,
+      value: ''
+    }
+  },
+
+  computed: {
+    classNames () {
+      return {
+        [`dmx-btn-${this.size}`]: true,
+        [`dmx-btn-${this.type}`]: true,
+        'dmx-btn-inline': this.true,
+        'dmx-btn-plain': this.plain,
+        'dmx-btn-round': this.round,
+        'dmx-btn-active': this.active,
+        'dmx-btn-disabled': this.disabled
+      }
+    }
+  },
+
+  methods: {
+    /**
+     * 点击按钮触发
+     * `disabled` 为非true时有效
+     */
+    bindTap (evt) {
+      this.triggerEvent('click', evt.detail)
+    },
+
+    /**
+     * 用户点击该按钮时，会返回获取到的用户信息,
+     * 回调的detail数据与wx.getUserInfo返回的一致,
+     * open-type="getUserInfo"时有效
+     */
+    bindgetuserinfo (evt) {
+      this.triggerEvent('getuserinfo', evt.detail)
+    },
+
+    /**
+     * 客服消息回调
+     * open-type="contact"时有效
+     */
+    bindcontact (evt) {
+      this.triggerEvent('contact', evt.detail)
+    },
+
+    /**
+     * 获取用户手机号回调
+     * open-type="getPhoneNumber"时有效
+     */
+    bindgetphonenumber (evt) {
+      this.triggerEvent('getphonenumber', evt.detail)
+    },
+
+    /**
+     * 打开 APP 成功的回调
+     * open-type="launchApp"时有效
+     */
+    bindlaunchapp (evt) {
+      this.triggerEvent('launchapp', evt.detail)
+    },
+
+    /**
+     * 当使用开放能力时，发生错误的回调
+     * open-type="launchApp"时有效
+     */
+    binderror (evt) {
+      this.triggerEvent('error', evt.detail)
+    },
+
+    /**
+     * 在打开授权设置页后回调
+     * open-type="openSetting"时有效
+     */
+    bindopensetting (evt) {
+      this.triggerEvent('opensetting', evt.detail)
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+@import './styles/util.styl'
+
+:host
+  display flex
+  flex 1
+
+/* 通用样式 */
+.dmx-btn
+  width 100%
+  display inline-block
+  position relative
+  box-sizing border-box
+  background-clip padding-box
+  border 0 none
+  font-weight 400
+  text-align center
+  color #404040
+  cursor pointer
+  background-color transparent
+  -webkit-appearance none
+  &-inline
+    width auto
+  &-round
+    border-radius 4px !important
+  &-round::after
+    border-radius 8px !important
+  &-disabled
+  &-disabled.dmx-btn-touch
+    pointer-events none
+    background-color #e5e5e5 !important
+    color #999 !important
+
+/* size */
+.dmx-btn-small
+  height 64rpx
+  line-height 64rpx
+  padding 0 20rpx
+  font-size 14px
+.dmx-btn-middle
+  height 88rpx
+  line-height 88rpx
+  padding 0 28rpx
+  font-size 16px
+.dmx-btn-large
+  height 100rpx
+  line-height 100rpx
+  padding 0 32rpx
+  font-size 16px
+
+/* type */
+.dmx-btn-default
+  background-color white
+  drawBorder1px(#e5e5e5, 0)
+  &.dmx-btn-touch
+  &.dmx-btn-active
+    background-color #f5f5f5
+
+.dmx-btn-primary
+  background-color #fc0
+  &.dmx-btn-touch
+  &.dmx-btn-active
+    background-color #fb0
+
+.dmx-btn-plain
+  &.dmx-btn-primary
+    background-color #fff
+    drawBorder1px(#fa0, 0)
+    &.dmx-btn-touch
+    &.dmx-btn-active
+      background-color darken(#fff, 5%)
+
+// 预留,待完善
+// .dmx-btn-success
+// .dmx-btn-warning
+// .dmx-btn-danger
+// .dmx-btn-info
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

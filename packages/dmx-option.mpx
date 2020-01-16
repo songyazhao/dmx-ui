@@ -1,0 +1,85 @@
+<template>
+  <view
+    class="dmx-option"
+    wx:class="{{classNames}}"
+    bindtap="handleSelect">
+    <slot></slot>
+    <block wx:if="{{label}}">{{label}}</block>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  properties: {
+    // - 选项携带的值
+    value: {
+      type: String,
+      value: ''
+    },
+    // - 默认选中的值
+    selected: {
+      type: String,
+      value: ''
+    },
+    // - 是否禁用
+    disabled: {
+      type: Boolean,
+      value: false
+    },
+    label: {
+      type: String,
+      value: ''
+    }
+  },
+
+  computed: {
+    classNames () {
+      return {
+        'dmx-option-selected': this.selected === this.value,
+        'dmx-option-disabled': this.disabled
+      }
+    }
+  },
+
+  methods: {
+    handleSelect () {
+      this.triggerEvent('change', { value: this.value })
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+.dmx-option
+  height 44px
+  line-height 44px
+  color #404040
+  font-size 14px
+  background-color white
+  position relative
+  left 1px
+  padding-left 16px
+  &-selected
+    color #FFAA00
+  &-disabled
+    background-color #CCC
+  &::after
+    content ''
+    display block
+    border-bottom 1px solid #E5E5E5
+    transform-origin 0 0
+    transform scale(.5) translate(50%, 50%)
+    position absolute
+    left calc(-50% + 23px)
+    right -50%
+    top -50%
+    bottom -50%
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

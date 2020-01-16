@@ -1,0 +1,156 @@
+<template>
+  <view
+    class="dmx-checkbox dmx-checkbox-{{size}}"
+    wx:class="{{classNames}}"
+    wx:style="{{ styleObject }}"
+    bindtap="handleToggle">
+    <slot name="before"></slot>
+    <block wx:if="{{label}}">{{label}}</block>
+    <slot></slot>
+    <slot name="after"></slot>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  options: {
+    multipleSlots: true, // - 启用多slot支持
+    styleIsolation: 'apply-shared'
+  },
+
+  externalClasses: [
+    'dmx-filter-box',
+    'dmx-select-box',
+    'dmx-checkbox-group-item'
+  ],
+
+  properties: {
+    // - 选项携带的值
+    val: {
+      type: String,
+      value: ''
+    },
+    // - 是否选中
+    value: {
+      type: Boolean,
+      value: false
+    },
+    label: {
+      type: String,
+      value: ''
+    },
+    // - 尺寸
+    size: {
+      type: String,
+      value: 'middle' // large | middle | small
+    },
+    // - 是否实色按钮
+    solid: {
+      type: Boolean,
+      value: false
+    },
+    // - 选中态的样式
+    checkedStyle: {
+      type: Object,
+      value: {}
+    },
+    // - 是否禁用
+    disabled: {
+      type: Boolean,
+      value: false
+    },
+    width: {
+      type: String,
+      value: ''
+    },
+    height: {
+      type: String,
+      value: ''
+    }
+  },
+
+  computed: {
+    classNames () {
+      return {
+        'dmx-checkbox-checked': this.value,
+        'dmx-checkbox-disabled': this.disabled,
+        'dmx-checkbox-solid': this.solid
+      }
+    },
+    styleObject () {
+      const noopValue = { width: this.width, height: this.height }
+      return this.value
+        ? { ...noopValue, ...this.checkedStyle }
+        : noopValue
+    }
+  },
+
+  methods: {
+    // - 切换选中状态
+    handleToggle () {
+      const value = !this.value
+      this.triggerEvent('input', { value }) // - Mpx双向绑定
+      this.triggerEvent('change', { value: this.val, checked: value })
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+:host
+  display inline-block
+.dmx-checkbox
+  color #404040
+  text-align center
+  background-color white
+  position relative
+  left 1px
+  border-width 0
+  border-color #E5E5E5
+  border-radius 3px
+  &-solid
+  &-disabled
+    border-color #F7F7F7
+    background-color #F7F7F7
+  &-checked
+    border-color #FFAA00
+    background-color #FFFCF5
+  &::after
+    content ''
+    display block
+    border-width 1px
+    border-style solid
+    border-color inherit
+    border-radius 6px
+    box-sizing border-box
+    transform-origin 0 0
+    transform scale(.5) translate(50%, 50%)
+    position absolute
+    top calc(-50% - 1rpx)
+    left -50%
+    right -50%
+    bottom -50%
+  &-large
+    width 158rpx
+    height 66rpx
+    line-height 66rpx
+    font-size 14px
+  &-middle
+    width 140rpx
+    height 56rpx
+    line-height 56rpx
+    font-size 12px
+  &-small
+    width 110rpx
+    height 44rpx
+    line-height 44rpx
+    font-size 10px
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

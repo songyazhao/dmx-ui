@@ -1,0 +1,99 @@
+<template>
+  <radio-group
+    class="dmx-radio-group"
+    bindchange="handleChange">
+    <label
+      wx:for="{{options}}"
+      wx:key="value"
+      class="dmx-radio-label">
+      <radio
+        class="dmx-radio-input"
+        name="{{name}}"
+        value="{{item.value}}"
+        checked="{{value !== '' && ~~item.value === ~~value}}"
+      />
+      <view class="dmx-radio-text">
+        {{item.label}}
+      </view>
+    </label>
+  </radio-group>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  options: {
+    styleIsolation: 'apply-shared'
+  },
+
+  properties: {
+    // radio 的 name
+    name: {
+      type: String,
+      value: ''
+    },
+    // - 选项
+    options: {
+      type: Array,
+      value: []
+    },
+    // - 默认选中的值, 可以用 `wx:model` 双向绑定
+    value: {
+      type: String,
+      value: ''
+    }
+  },
+
+  methods: {
+    handleChange (e) {
+      this.triggerEvent('input', e.detail) // `wx:model` 双向绑定
+      this.triggerEvent('change', e.detail)
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+:host
+  width 100%
+
+// radio未选中时样式
+radio .wx-radio-input
+  width 32rpx
+  height 32rpx
+  background none
+  border-radius 50%
+  box-sizing border-box
+  // 选中后的 背景样式 （红色背景 无边框 可根据UI需求自己修改
+  &.wx-radio-input-checked
+    background-color #fc0 !important
+    border-color #fc0 !important
+    overflow hidden
+    box-sizing border-box
+    // 选中后的 对勾样式 （白色对勾 可根据UI需求自己修改
+    &::before {}
+
+.dmx-radio-group
+  display flex
+  align-items center
+  .dmx-radio-label
+    display flex
+    align-items center
+    line-height 32rpx
+    white-space nowrap
+    &:not(:last-child)
+      margin-right 28rpx
+    .dmx-radio-input
+      margin-right 8rpx
+    .dmx-radio-text
+      flex 1
+      color #808080
+      font-size 14px
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

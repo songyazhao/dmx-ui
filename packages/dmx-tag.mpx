@@ -1,0 +1,124 @@
+<template>
+  <view
+    class="dmx-tag dmx-tag-{{size}}"
+    wx:class="{{classNames}}"
+    wx:style="{{ styleObject }}">
+    <slot name="before"></slot>
+    <block wx:if="{{text}}">{{text}}</block>
+    <slot></slot>
+    <slot name="after"></slot>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  options: {
+    multipleSlots: true // - 启用多slot支持
+  },
+
+  properties: {
+    text: {
+      type: String,
+      value: ''
+    },
+    // - 尺寸
+    size: {
+      type: String,
+      value: 'small' // large | middle | small
+    },
+    // - 是否圆角tag
+    round: {
+      type: Boolean,
+      value: false
+    },
+    // - 文字颜色
+    color: {
+      type: String,
+      value: ''
+    },
+    // - 边框颜色
+    borderColor: {
+      type: String,
+      value: ''
+    },
+    // - 背景颜色
+    bgColor: {
+      type: String,
+      value: ''
+    }
+  },
+
+  computed: {
+    classNames () {
+      return {
+        'dmx-tag-round': this.round
+      }
+    },
+    styleObject () {
+      return {
+        color: this.color,
+        borderColor: this.borderColor || this.color,
+        backgroundColor: this.bgColor
+      }
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+:host
+  display inline-block
+.dmx-tag
+  margin-right 8rpx
+  color #808080
+  text-align center
+  background-color white
+  position relative
+  left 1px
+  border-width 0
+  border-color #ccc
+  &-round
+    border-radius 2px
+    &::after
+      border-radius 4px
+  &::after
+    content ''
+    display block
+    width 200%
+    height 200%
+    border-width 1px
+    border-style solid
+    border-color inherit
+    box-sizing border-box
+    transform-origin 0 0
+    transform scale(.5)
+    position absolute
+    top 0
+    left 0
+    right -50%
+    bottom -50%
+    z-index 1
+  &-large
+    padding 0 16rpx
+    height 48rpx
+    line-height 48rpx
+    font-size 24rpx
+  &-middle
+    padding 0 10rpx
+    height 36rpx
+    line-height 36rpx
+    font-size 22rpx
+  &-small
+    padding 0 8rpx
+    height 32rpx
+    line-height 32rpx
+    font-size 20rpx
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

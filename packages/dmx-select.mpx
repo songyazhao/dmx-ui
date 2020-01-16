@@ -1,0 +1,114 @@
+<template>
+  <view class="dmx-select">
+    <dmx-checkbox
+      solid
+      size="middle"
+      class="dmx-select-box"
+      value="{{currentSelected.checked}}"
+      checked-style="{{ { backgroundColor: 'white', color: '#FFAA00' } }}"
+      bind:tap="handleToggle">
+      {{currentSelected.label}}
+      <dmx-icon slot="after" name="{{iconName}}"></dmx-icon>
+    </dmx-checkbox>
+    <view
+      class="dmx-select-options"
+      wx:style="{{ { marginTop: space } }}"
+      hidden="{{isHidden}}">
+      <scroll-view scroll-y class="dmx-select-scroll">
+        <dmx-option
+          wx:for="{{options}}"
+          wx:key="index"
+          value="{{item.value}}"
+          selected="{{value}}"
+          bind:change="handleSelect">
+          {{item.label}}
+        </dmx-option>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  properties: {
+    // - 选项
+    options: {
+      type: Array,
+      value: []
+    },
+    // - 当前选中的值
+    value: {
+      type: String,
+      value: ''
+    },
+    space: {
+      type: String,
+      value: 0
+    }
+  },
+
+  data: {
+    isHidden: true
+  },
+
+  computed: {
+    iconName () {
+      return {
+        'arrow-down': this.isHidden && !this.currentSelected.checked,
+        'arrow-up': !this.isHidden && !this.currentSelected.checked,
+        'arrow-down-active': this.isHidden && this.currentSelected.checked,
+        'arrow-up-active': !this.isHidden && this.currentSelected.checked
+      }
+    },
+    currentSelected () {
+      const current = this.options.find(x => ~~this.value !== 0 && ~~x.value === ~~this.value)
+      const noopLabel = this.options[0] ? this.options[0].label : ''
+
+      return current
+        ? { checked: true, label: current.label }
+        : { checked: !this.isHidden, label: noopLabel }
+    }
+  },
+
+  methods: {
+    handleSelect (e) {
+      this.triggerEvent('input', e.detail) // - Mpx双向绑定
+      this.handleToggle()
+    },
+    handleToggle () {
+      this.isHidden = !this.isHidden
+      this.triggerEvent(this.isHidden ? 'on-hide' : 'on-show')
+    },
+    // - 隐藏所有可选项, 用于外部调用
+    shrink () {
+      this.isHidden = true
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+.dmx-select
+  &-options
+  &-scroll
+    max-height 52.62vh
+  &-options
+    position absolute
+    z-index 1001
+    left -1px
+    right 0
+    background-color white
+</style>
+
+<script type="application/json">
+  {
+    "component": true,
+    "usingComponents": {
+      "dmx-icon": "./dmx-icon",
+      "dmx-checkbox": "./dmx-checkbox",
+      "dmx-option": "./dmx-option"
+    }
+  }
+</script>

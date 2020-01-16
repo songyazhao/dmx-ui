@@ -1,0 +1,80 @@
+<template>
+  <view class="dmx-loadmore" wx:if="{{isShowLoading}}">
+    <dmx-icon name="loading"></dmx-icon>
+    <text class="dmx-loadmore-text">{{options.loadingTxt}}</text>
+  </view>
+  <view class="dmx-loadmore" wx:if="{{isShowNoMore && !isShowLoading}}">
+    <text class="dmx-loadmore-text">{{options.noMoreTxt}}</text>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  properties: {
+    options: {
+      type: Object,
+      value: {
+        loadingTxt: '正在加载',
+        noMoreTxt: '已经到底了！'
+      }
+    }
+  },
+
+  data: {
+    isShowLoading: false,
+    isShowNoMore: false
+  },
+
+  methods: {
+    showLoading () {
+      this.isShowLoading = true
+      this.isShowNoMore = false
+    },
+    showNoMore () {
+      this.isShowLoading = false
+      this.isShowNoMore = true
+    },
+    hide () {
+      this.isShowLoading = false
+      this.isShowNoMore = false
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+@import './styles/animate.styl'
+
+.dmx-loadmore
+  position relative
+  color #808080
+  font-size 12px
+  line-height 20px
+  text-align center
+  padding 12px
+  background url('data:image/png;base64,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') no-repeat center bottom
+  background-size 100% auto
+  &::after
+    content ''
+    position absolute
+    right 0
+    bottom 0
+    left 0
+    height 1px
+    background-color #e5e5e5
+    transform-origin 0 100%
+    transform scale3d(1, 0.5, 1)
+  &-text
+    display inline-block
+</style>
+
+<script type="application/json">
+  {
+    "component": true,
+    "usingComponents": {
+      "dmx-icon": "./dmx-icon"
+    }
+  }
+</script>

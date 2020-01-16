@@ -1,0 +1,241 @@
+<template>
+  <view class="dmx-picker-click" bindtap="show">
+    <slot></slot>
+  </view>
+
+  <view wx:show="{{isShow}}" class="dmx-picker" bindtap="bindCancel">
+    <view class="dmx-picker-container" catchtap>
+      <view class="dmx-picker-actions">
+        <view class="dmx-picker-actions__btn" bindtap="bindCancel">{{ cancelText }}</view>
+        <view class="dmx-picker-actions__title">{{ title }}</view>
+        <view class="dmx-picker-actions__btn" bindtap="bindConfirm">{{ confirmText }}</view>
+      </view>
+      <view wx:if="{{columnTitles.length > 0}}" class="dmx-picke-column-title">
+        <text wx:for="{{columnTitles}}" wx:key="index">{{ item }}</text>
+      </view>
+      <!-- 单列模式 -->
+      <picker-view
+        wx:if="{{mode === 'single'}}"
+        class="dmx-picker-main"
+        indicator-style="height: 46px"
+        value="{{[realTimeValue]}}"
+        bindchange="bindChange">
+        <picker-view-column>
+          <view
+            wx:for="{{range}}"
+            wx:for-index="cindex"
+            wx:for-item="citem"
+            wx:key="cindex">
+            {{ citem[rangeKey] || citem }}
+          </view>
+        </picker-view-column>
+      </picker-view>
+      <!-- 多列模式 -->
+      <picker-view
+        wx:if="{{mode === 'multiple'}}"
+        class="dmx-picker-main"
+        indicator-style="height: 46px"
+        value="{{realTimeValue}}"
+        bindchange="bindChange">
+        <picker-view-column wx:for="{{range}}" wx:key="index">
+          <view
+            wx:for="{{item}}"
+            wx:for-index="cindex"
+            wx:for-item="citem"
+            wx:key="cindex">
+            {{ citem[rangeKey] || citem }}
+          </view>
+        </picker-view-column>
+      </picker-view>
+    </view>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  properties: {
+    // - 中间的标题
+    title: {
+      type: String,
+      value: ''
+    },
+    // - 取消按钮的文字
+    cancelText: {
+      type: String,
+      value: '取消'
+    },
+    // - 确认按钮的文字
+    confirmText: {
+      type: String,
+      value: '确认'
+    },
+    // - 自定义列选择器的title
+    columnTitles: {
+      type: Array,
+      value: []
+    },
+    // - 列选项的数据
+    range: {
+      type: Array,
+      value: []
+    },
+    // - mode 为 `multiple` 时有效
+    rangeKey: {
+      type: String,
+      value: 'name'
+    },
+    // - 默认选中的值
+    defaultValue: {
+      type: [Number, Array],
+      value: []
+    },
+    // - 单列(`single`)或者多列模式(`multiple`)
+    mode: {
+      type: String,
+      value: 'single'
+    }
+  },
+
+  data: {
+    isShow: false,
+    cacheValue: null, // picker的最终值, 确定时取当前选中的, 取消时取之前的
+    realTimeValue: null // picker的实时值, 滑动选项时改变
+  },
+
+  watch: {
+    range () {
+      if (this.cacheValue || this.realTimeValue) return
+
+      const noopValue = this.defaultValue
+
+      // 列表元数据改变时回归默认值
+      this.cacheValue = noopValue
+      this.realTimeValue = noopValue
+    }
+  },
+
+  methods: {
+    bindCancel () {
+      this.__updateVal(false)
+      const value = this.cacheValue
+      this.triggerEvent('cancel', { value })
+      this.hide()
+    },
+
+    bindConfirm () {
+      const value = this.realTimeValue
+      const source = this.__isSingle()
+        ? this.range[value]
+        : value.map((x, i) => this.range[i][x])
+
+      this.triggerEvent('confirm', { value, source })
+      this.__updateVal(true)
+      this.hide()
+    },
+
+    bindChange ({ detail: { value } }) {
+      value = this.__isSingle() ? value[0] : value
+      this.realTimeValue = value
+      this.triggerEvent('columnchange', { value })
+    },
+
+    show () {
+      this.isShow = true
+    },
+
+    hide () {
+      this.isShow = false
+    },
+
+    /**
+     * 更新默认选中的值
+     * @param {Number, Array} value
+     */
+    updateDetaultValue (value) {
+      this.cacheValue = value
+      this.realTimeValue = value
+    },
+
+    __updateVal (res = false) {
+      if (res) this.cacheValue = this.realTimeValue
+    },
+
+    __isSingle () {
+      return this.mode === 'single'
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+@import './styles/animate.styl'
+
+.dmx-picker
+  position fixed
+  left 0
+  right 0
+  top 0
+  bottom 0
+  z-index 1000
+  line-height 1
+  background-color rgba(0, 0, 0, 0.6)
+  animation fadeIn 0.25s ease-out
+
+.dmx-picker-click
+  height 100%
+
+.dmx-picker-container
+  position absolute
+  bottom 0
+  width 100%
+  background-color white
+  animation slideInUp 0.25s ease-out
+
+.dmx-picker-actions
+  position relative
+  display flex
+  justify-content space-between
+  align-items center
+  &::after
+    content ''
+    position absolute
+    right 0
+    bottom 0
+    left 0
+    height 1px
+    background-color #e5e5e5
+    transform-origin 0 100%
+    transform scale3d(1, 0.5, 1)
+  &__btn
+    padding 44rpx 32rpx
+    font-size 32rpx
+  &__title
+    font-size 36rpx
+
+.dmx-picke-column-title
+  line-height 80rpx
+  display flex
+  justify-content space-between
+  background-color #f5f5f5
+  font-size 28rpx
+  color #808080
+  text-align center
+  text
+    flex 1
+
+.dmx-picker-main
+  text-align center
+  font-size 20px
+  color #404040
+  width 100%
+  height 378rpx
+  line-height 46px
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>

@@ -1,0 +1,166 @@
+<template>
+  <view class="dmx-search">
+    <slot name="before"></slot>
+    <view class="dmx-search-box">
+      <dmx-icon name="search"></dmx-icon>
+      <input
+        class="dmx-search-box__input"
+        wx:model="{{content}}"
+        placeholder="{{placeholder}}"
+        disabled="{{disabled}}"
+        maxlength="{{maxlength}}"
+        focus="{{focus}}"
+        confirm-type="search"
+        bindinput="handleInput"
+        bindfocus="handleFocus"
+        bindblur="handleBlur"
+        bindconfirm="handleConfirm">
+        <dmx-icon
+          wx:if="{{showClose}}"
+          wx:show="{{content !== ''}}"
+          class="dmx-icon dmx-icon-close"
+          name="close"
+          bindtap="handleClean">
+        </dmx-icon>
+      </input>
+    </view>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+import { debounce } from '~/utils/util'
+
+// - 输入框防抖
+let handleInputComplete = () => console.log('Components wait for injection after rendering')
+
+createComponent({
+  options: {
+    multipleSlots: true, // - 启用多slot支持
+    styleIsolation: 'apply-shared'
+  },
+
+  properties: {
+    // - 是否显示清除按钮
+    showClose: {
+      type: Boolean,
+      value: true
+    },
+    // - 输入的等待时间
+    wait: {
+      type: Number,
+      value: 800
+    },
+    // - 输入框为空时占位符
+    placeholder: {
+      type: String,
+      value: '在此处输入搜索内容'
+    },
+    // - 是否禁用
+    disabled: {
+      type: Boolean,
+      value: false
+    },
+    // - 最大输入长度，设置为 -1 的时候不限制最大长度
+    maxlength: {
+      type: Number,
+      value: -1
+    },
+    // - 自动聚焦，拉起键盘
+    focus: {
+      type: Boolean,
+      value: false
+    },
+    // - 父级向子双向绑定
+    value: {
+      type: String,
+      value: ''
+    }
+  },
+
+  data: {
+    content: ''
+  },
+
+  watch: {
+    // 监听双向绑定的值
+    value: {
+      handler (val) {
+        if (val) this.content = val
+      },
+      immediate: true
+    }
+  },
+
+  created () {
+    handleInputComplete = debounce(() => {
+      this.triggerEvent('input-complete', { value: this.content })
+    }, this.wait)
+  },
+
+  methods: {
+    // - 清除搜索框内容
+    handleClean () {
+      this.content = ''
+      this.triggerEvent('clean')
+      this.triggerEvent('input', { value: this.content })
+    },
+    // - 搜索框输入时触发，e.detail = { value, keyCode, cursor }
+    handleInput (e) {
+      this.triggerEvent('input', e.detail)
+      handleInputComplete() // - 输入完成后派发事件, 一定时间内不间断输入则不会触发
+    },
+    // - 输入框聚焦时触发，e.detail = { value, height }，height 为键盘高度，在基础库 1.9.90 起支持
+    handleFocus (e) {
+      this.triggerEvent('focus', e.detail)
+    },
+    // - 输入框失去焦点时触发，e.detail = { value }
+    handleBlur (e) {
+      this.triggerEvent('blur', e.detail)
+    },
+    // - 点击完成按钮时触发，e.detail = { value }
+    handleConfirm (e) {
+      this.triggerEvent('confirm', e.detail)
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+.dmx-search
+  margin 8px 16px
+  background-color white
+  display flex
+  border-radius 3px
+.dmx-search-box
+  flex auto
+  position relative
+  .dmx-icon
+    position absolute
+    top 50%
+    transform translateY(-50%)
+    &-search
+      left 10px
+    &-close
+      width 32px
+      height 32px
+      right 0
+      bottom -10px
+      background-size auto 12px
+      pointer-event none
+  &__input
+    height 36px
+    padding 0 28px
+    color #404040
+    font-size 12px
+    line-height 36px
+</style>
+
+<script type="application/json">
+  {
+    "component": true,
+    "usingComponent": {
+      "dmx-icon": "./dmx-icon"
+    }
+  }
+</script>

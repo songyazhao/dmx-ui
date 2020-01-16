@@ -1,0 +1,101 @@
+<template>
+  <view
+    wx:if="{{isShow}}"
+    class="dmx-mask"
+    wx:class="{{ classNames }}"
+    wx:style="{{ { zIndex, height, backgroundColor: bgColor } }}"
+    bindtap="handleTap">
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  properties: {
+    // - 是否点击蒙层时自动隐藏
+    autoHide: {
+      type: Boolean,
+      value: true
+    },
+    // css z-index
+    zIndex: {
+      type: Number,
+      value: 1000
+    },
+    // - 蒙层颜色
+    bgColor: {
+      type: String,
+      value: 'rgba(0, 0, 0, 0.4)'
+    },
+    // - 蒙层高
+    height: {
+      type: String,
+      value: '100%'
+    },
+    // 是否激活动画过渡, 默认关闭
+    enableAnimation: {
+      type: Boolean,
+      value: false
+    }
+  },
+
+  data: {
+    isShow: false,
+    isLeave: false // 是否要消失在视图中(true会触发消失的动画)
+  },
+
+  computed: {
+    classNames () {
+      if (!this.enableAnimation) return {}
+      return {
+        entry: this.isShow && !this.isLeave,
+        leave: this.isLeave
+      }
+    }
+  },
+
+  methods: {
+    handleTap () {
+      if (this.autoHide) this.hide()
+    },
+    show () {
+      this.isShow = true
+      this.isLeave = false
+      this.triggerEvent('show')
+    },
+    hide () {
+      if (!this.isShow) return
+
+      // 等待离开动画执行完毕在进行隐藏, 200表示200ms, 同 .dmx-mask.leave 的 `animation-duration` 时间
+      const delay = 200
+      this.isLeave = true // 执行消失动画
+      setTimeout(() => {
+        this.isShow = false
+        this.triggerEvent('hide')
+      }, delay)
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+@import './styles/animate.styl'
+
+.dmx-mask
+  position fixed
+  left 0
+  right 0
+  bottom 0
+  line-height 1
+  &.entry
+    animation fadeIn .35s cubic-bezier(0.455, 0.030, 0.515, 0.955) /* easeInOutQuad */
+  &.leave
+    animation fadeOut .2s cubic-bezier(0.250, 0.460, 0.450, 0.940) /* easeOutQuad */
+</style>
+
+<script type="application/json">
+  {
+    "component": true
+  }
+</script>
