@@ -15,7 +15,21 @@
     "help": "node ./build/build.js --help"
   },
   "author": "糖醋里脊叉烧包 <syazhao@foxmail.com>",
-  "license": "ISC",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/songyazhao/dmx-ui/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/songyazhao/dmx-ui.git"
+  },
+  "keywords": [
+    "miniprogram",
+    "dmx-ui",
+    "mpx",
+    "wechat",
+    "ali"
+  ],
   "dependencies": {
     "@mpxjs/api-proxy": "^2.3.0",
     "@mpxjs/core": "^2.3.0"

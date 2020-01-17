@@ -1,6 +1,11 @@
-# dmx
+# dmx-ui
 
-> 基于[mpx](https://github.com/didi/mpx/)框架的微信规范开发一套高复用型UI组件库
+> 基于[mpx](https://github.com/didi/mpx)框架的微信规范开发一套高复用型UI组件库
+
+[![Node](https://img.shields.io/badge/node-^10.15.1-brightgreen.svg?style=flat-square&logo=appveyor)](https://nodejs.org)
+[![Mpx](https://img.shields.io/badge/mpx-^2.3.0-brightgreen.svg?style=flat-square&logo=appveyor)](https://github.com/didi/mpx)
+<!-- [![downloads](https://img.shields.io/npm/dt/@songyazhao/dmx-ui.svg?style=flat-square&logo=appveyor)](https://www.npmjs.com/package/@songyazhao/dmx-ui) -->
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square&logo=appveyor)](https://github.com/songyazhao/dmx-ui/blob/master/LICENSE)
 
 - [组件文档](https://github.com/songyazhao/dmx-ui/blob/master/docs/component.md)
 - [示例说明](https://github.com/songyazhao/dmx-ui/blob/master/docs/example.md)
