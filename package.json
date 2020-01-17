@@ -1,6 +1,6 @@
 {
   "name": "@songyazhao/dmx-ui",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "基于mpx框架的微信规范开发一套高复用型UI组件库",
   "main": "index.js",
   "scripts": {
